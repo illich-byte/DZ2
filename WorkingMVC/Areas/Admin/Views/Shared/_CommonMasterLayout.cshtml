@@ -1,6 +1,6 @@
+@* Compact/Fluid class *@
 @{
-  @* Compact/Fluid class *@
-  ViewData["contentType"] = ViewData["container"] is string container && container == "container-xxl" ? "layout-compact layout-menu-fixed" : "";
+    ViewData["contentType"] = ViewData["container"] is string container && container == "container-xxl" ? "layout-compact layout-menu-fixed" : "";
 }
 
 @inject IHttpContextAccessor httpContextAccessor
@@ -14,58 +14,42 @@
 @(ViewData["customizerHidden"] is string customizerHidden ? customizerHidden : "")" data-assets-path='@((httpContextAccessor.HttpContext?.Request.PathBase ?? "") + "/")' data-template='@(("vertical-menu-template-free"))'>
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
 
-  @{
-    string title = ViewData["title"] as string ?? "";
-    string appName = TempData.Peek("appName") as string ?? "";
-    string productPage = TempData.Peek("productPage") as string ?? "";
+    @{
+        string title = ViewData["title"] as string ?? "";
+        string appName = TempData.Peek("appName") as string ?? "";
+        string productPage = TempData.Peek("productPage") as string ?? "";
     }
-  <title>@title | @appName - Asp.Net Core MVC Free Admin Template</title>
-  <meta name="description" content="" />
+    <title>@title | @appName - Asp.Net Core MVC Free Admin Template</title>
+    <meta name="description" content="" />
 
-  <!-- Canonical SEO -->
-  <link rel="canonical" href='@productPage'>
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/admin/img/favicon/favicon.ico" />
+    <link rel="canonical" href='@productPage'>
+    <link rel="icon" type="image/x-icon" href="/admin/img/favicon/favicon.ico" />
 
-  <!-- Core Styles -->
-  @await Html.PartialAsync("Sections/_Styles")
+    @await Html.PartialAsync("Sections/_Styles")
 
-  <!-- Vendor Styles -->
-  @RenderSection("VendorStyles", required: false)
+    @RenderSection("VendorStyles", required: false)
 
-  <!-- Page Styles -->
-  @RenderSection("PageStyles", required: false)
+    @RenderSection("PageStyles", required: false)
 
-  <!-- Include Scripts for customizer, helper, analytics, config -->
-  @await Html.PartialAsync("Sections/_ScriptsIncludes")
+    @await Html.PartialAsync("Sections/_ScriptsIncludes")
 </head>
 
 <body>
-  <!-- Layout Content -->
-  @RenderBody()
-  <!--/ Layout Content -->
+    @RenderBody()
+    @await Html.PartialAsync("Sections/_Scripts")
 
-  <!-- Core Scripts -->
-  @await Html.PartialAsync("Sections/_Scripts")
+    @RenderSection("VendorScripts", required: false)
 
-  <!-- Vendor Scripts -->
-  @RenderSection("VendorScripts", required: false)
+    <script src='/admin/js/main.js'></script>
 
+    @RenderSection("PageScripts", required: false)
 
-  
-
-  <!-- Main JS-->
-  <script src='/admin/js/main.js'></script>
-
-  <!-- Page Scripts-->
-  @RenderSection("PageScripts", required: false)
-
-  <!-- Place this tag in your head or just before your close body tag. -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
+    @RenderSection("Scripts", required: false)
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 </body>
 

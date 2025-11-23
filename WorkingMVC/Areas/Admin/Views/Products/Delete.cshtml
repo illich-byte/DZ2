@@ -1,0 +1,78 @@
+﻿@using WorkingMVC.Data.Entities
+@model ProductEntity
+
+@{
+    ViewData["Title"] = $"Видалити товар: {Model.Name}";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4 class="text-danger">Ви впевнені, що хочете видалити цей товар?</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+            <dd class="col-sm-9">
+                @Model.Price.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("uk-UA"))
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Category)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Category.Name)
+            </dd>
+
+            @* --- Головне зображення --- *@
+            <dt class="col-sm-3">
+                Головне фото
+            </dt>
+            <dd class="col-sm-9">
+                @{
+                    var mainImage = Model.ProductImages.FirstOrDefault(i => i.IsMain)
+                    ?? Model.ProductImages.FirstOrDefault();
+                }
+                @if (mainImage != null)
+                {
+                    <img src="/images/products/@mainImage.ImageUrl" alt="@mainImage.ImageDescription" style="width: 100px; height: 100px; object-fit: cover;" class="img-thumbnail" />
+                }
+                else
+                {
+                    <span>Немає зображень</span>
+                }
+            </dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bx bx-trash"></i> Підтвердити видалення
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">Скасувати</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

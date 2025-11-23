@@ -1,0 +1,69 @@
+﻿@using WorkingMVC.Data.Entities
+@model ProductEntity
+
+@{
+    ViewData["Title"] = "Створити товар";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @* enctype="multipart/form-data" обов'язковий для завантаження файлів *@
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* --- ПОЛЯ ДЛЯ ТЕКСТОВИХ ДАНИХ --- *@
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            @* --- ВИБІР КАТЕГОРІЇ --- *@
+
+            <div class="form-group mb-3">
+                <label asp-for="CategoryId" class="control-label">Категорія</label>
+                @* ViewBag.Categories приходить з ProductsController *@
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                    <option value="">-- Виберіть категорію --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            @* --- ПОЛЕ ДЛЯ ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ --- *@
+
+            <div class="form-group mb-4">
+                <label class="control-label">Зображення товару (можна вибрати декілька)</label>
+                @* ІМ'Я "images" ПОВИННО ЗБІГАТИСЯ з аргументом List<IFormFile> images у ProductsController.Create *@
+                <input type="file" name="images" multiple class="form-control" accept="image/*" />
+                @* Тут валідація для файлів не використовується, оскільки це не властивість моделі *@
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Створити</button>
+                <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

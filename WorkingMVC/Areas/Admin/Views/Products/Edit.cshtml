@@ -1,0 +1,118 @@
+﻿@using WorkingMVC.Data.Entities
+@model ProductEntity
+
+@{
+    ViewData["Title"] = $"Редагувати товар: {Model.Name}";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @* Форма для оновлення текстових даних та додавання НОВИХ фото *@
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" /> @* Приховане поле ID для POST-запиту *@
+
+            @* --- ПОЛЯ ДЛЯ ТЕКСТОВИХ ДАНИХ --- *@
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            @* --- ВИБІР КАТЕГОРІЇ --- *@
+
+            <div class="form-group mb-3">
+                <label asp-for="CategoryId" class="control-label">Категорія</label>
+                @* ViewBag.Categories приходить з ProductsController *@
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                    <option value="">-- Виберіть категорію --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            @* --- ПОЛЕ ДЛЯ ЗАВАНТАЖЕННЯ НОВИХ ЗОБРАЖЕНЬ --- *@
+
+            <div class="form-group mb-4">
+                <label class="control-label">Додати НОВІ зображення (можна вибрати декілька)</label>
+                @* ІМ'Я "newImages" ПОВИННО ЗБІГАТИСЯ з аргументом у ProductsController.Edit *@
+                <input type="file" name="newImages" multiple class="form-control" accept="image/*" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+            </div>
+        </form>
+    </div>
+
+    @* --- СЕКЦІЯ КЕРУВАННЯ ІСНУЮЧИМИ ЗОБРАЖЕННЯМИ --- *@
+    <div class="col-md-6">
+        <h3>Керування зображеннями</h3>
+        @if (Model.ProductImages != null && Model.ProductImages.Any())
+        {
+            <div class="row">
+                @foreach (var img in Model.ProductImages.OrderBy(i => i.IsMain))
+                {
+                    <div class="col-6 col-sm-4 col-md-3 mb-4">
+                        <div class="card h-100 position-relative">
+
+                            @* Головне фото *@
+                            @if (img.IsMain)
+                            {
+                                <span class="badge bg-success position-absolute top-0 start-0 m-1">Головне</span>
+                            }
+
+                            @* Зображення *@
+                            <img src="/images/products/@img.ImageUrl" class="card-img-top" alt="@img.ImageDescription" style="height: 120px; object-fit: cover;">
+
+                            <div class="card-footer p-1">
+                                @* Форма для видалення (використовуємо POST, як вимагає REST) *@
+                                <form asp-action="DeleteImage" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити це зображення?');">
+                                    <input type="hidden" name="imageId" value="@img.Id" />
+                                    @* Передаємо ProductId у TempData для перенаправлення після видалення *@
+                                    @{
+                                        TempData["ProductIdForRedirect"] = Model.Id;
+                                    }
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">
+                                        <i class="bx bx-trash"></i> Видалити
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Немає завантажених зображень для цього товару.</p>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

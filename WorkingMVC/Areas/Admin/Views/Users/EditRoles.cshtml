@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using WorkingMVC.Models.Users
-@using WorkingMVC.Data.Entities
-@* Можливо треба додати @using WorkingMVC.Data.Entities.Idenity *@
+@using WorkingMVC.Data.Entities.Idenity 
+@using WorkingMVC.Data.Entities 
 
 @model ChangeRoleViewModel
 @{
@@ -14,14 +14,15 @@
     <input type="hidden" name="userId" value="@Model.UserId" />
 
     <div class="form-group">
-        @* ТУТ ЗМІНИЛИ ТИП змінної у циклі на var або RoleEntity *@
+
+        @* Тип role тепер буде RoleEntity, що дозволяє отримати доступ до властивості Name *@
         @foreach (var role in Model.AllRoles)
         {
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="roles" value="@role.Name"
-                       @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />
-                <label class="form-check-label">@role.Name</label>
-            </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="roles" value="@role.Name"
+                            @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />
+                    <label class="form-check-label">@role.Name</label>
+                </div>
         }
     </div>
 

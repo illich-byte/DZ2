@@ -5,6 +5,7 @@ using WorkingMVC.Constants;
 using WorkingMVC.Data.Entities.Idenity;
 using WorkingMVC.Interfaces;
 using WorkingMVC.Models.Account;
+using Microsoft.AspNetCore.Http; // Для IFormFile (хоча тут неявно, краще мати)
 
 namespace WorkingMVC.Controllers;
 
@@ -14,24 +15,32 @@ public class AccountController(
     IImageService imageService,
     IMapper mapper) : Controller
 {
+    // Назва папки для зображень користувачів
+    private const string UserFolderName = "avatars";
+
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
+
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
             return View(model);
+
         var user = await userManager.FindByEmailAsync(model.Email);
-        if(user!=null)
+
+        if (user != null)
         {
             var res = await signInManager
                 .PasswordSignInAsync(user, model.Password, false, false);
-            if(res.Succeeded)
+
+            // Запобігаємо подвійній авторизації, оскільки PasswordSignInAsync вже авторизує
+            if (res.Succeeded)
             {
-                await signInManager.SignInAsync(user, isPersistent: false);
+                // await signInManager.SignInAsync(user, isPersistent: false); 
                 return Redirect("/");
             }
         }
@@ -52,10 +61,12 @@ public class AccountController(
         {
             return View(model);
         }
+
         var user = mapper.Map<UserEntity>(model);
 
-        var imageStr = model.Image is not null 
-            ? await imageService.UploadImageAsync(model.Image) : null;
+        // ВИПРАВЛЕНО: Змінено UploadImageAsync на SaveImageAsync та додано папку UserFolderName
+        var imageStr = model.Image is not null
+            ? await imageService.SaveImageAsync(model.Image, UserFolderName) : null;
 
         user.Image = imageStr;
         var result = await userManager.CreateAsync(user, model.Password);
